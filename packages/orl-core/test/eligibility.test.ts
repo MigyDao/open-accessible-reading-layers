@@ -6,7 +6,7 @@ import {
   normalizeResourceHref,
   type OrlLocator,
   type PublicationIndex
-} from "../src/index.js";
+} from "../src/index";
 
 const publication: PublicationIndex = {
   readingOrder: [
