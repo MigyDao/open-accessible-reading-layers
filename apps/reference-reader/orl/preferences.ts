@@ -1,10 +1,14 @@
 import {
   createPreferences,
   defaultPreferences,
+  ThActionsKeys,
   ThBreakpoints,
   ThDockingTypes,
+  ThSettingsKeys,
   ThSheetTypes,
-  type CustomizableKeys
+  ThSpacingSettingsKeys,
+  ThTextSettingsKeys,
+  ThThemeKeys
 } from "@edrlab/thorium-web/core/preferences";
 import {
   ThCollapsibilityVisibility
@@ -13,8 +17,12 @@ import {
 export const READING_SUPPORT_ACTION_KEY = "readingSupport" as const;
 
 type OrlPreferenceKeys = {
-  action: typeof READING_SUPPORT_ACTION_KEY;
-} & CustomizableKeys;
+  action: typeof READING_SUPPORT_ACTION_KEY | ThActionsKeys;
+  theme: ThThemeKeys;
+  settings: ThSettingsKeys;
+  text: ThTextSettingsKeys;
+  spacing: ThSpacingSettingsKeys;
+};
 
 export const orlReaderPreferences =
   createPreferences<OrlPreferenceKeys>({
