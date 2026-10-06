@@ -39,3 +39,11 @@ jobs:
 
       - name: Verify Readium publication ingestion
         run: bash scripts/verify-readium-demo.sh
+
+      - name: Install Chromium for browser E2E
+        run: npx playwright install --with-deps chromium
+        working-directory: apps/reference-reader
+
+      - name: Run reference-reader browser E2E
+        run: npm run e2e
+        working-directory: apps/reference-reader
