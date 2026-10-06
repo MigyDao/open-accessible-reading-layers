@@ -1,0 +1,318 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openreadinglayers.org/schema/orl-0.1.schema.json",
+  "title": "Open Reading Layers Package",
+  "description": "Portable sidecar reading-support layers for EPUB publications.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schemaVersion",
+    "id",
+    "publication",
+    "metadata",
+    "layers"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "publication": {
+      "$ref": "#/$defs/publication"
+    },
+    "metadata": {
+      "$ref": "#/$defs/packageMetadata"
+    },
+    "layers": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/layer"
+      }
+    }
+  },
+  "$defs": {
+    "publication": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["identifier"],
+      "properties": {
+        "identifier": {
+          "type": "string",
+          "minLength": 1
+        },
+        "modified": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "title": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string",
+          "minLength": 2
+        }
+      }
+    },
+    "creator": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "packageMetadata": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "title",
+        "language",
+        "provenance"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string",
+          "minLength": 2
+        },
+        "provenance": {
+          "enum": [
+            "author",
+            "personal",
+            "community"
+          ]
+        },
+        "creator": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/creator"
+          }
+        },
+        "license": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "modified": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "textContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "before": {
+          "type": "string"
+        },
+        "highlight": {
+          "type": "string"
+        },
+        "after": {
+          "type": "string"
+        }
+      }
+    },
+    "locations": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "progression": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "totalProgression": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "position": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "fragments": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "anyOf": [
+        {
+          "required": ["progression"]
+        },
+        {
+          "required": ["totalProgression"]
+        },
+        {
+          "required": ["position"]
+        },
+        {
+          "required": ["fragments"]
+        }
+      ]
+    },
+    "locator": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "href",
+        "type",
+        "locations"
+      ],
+      "properties": {
+        "href": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string"
+        },
+        "locations": {
+          "$ref": "#/$defs/locations"
+        },
+        "text": {
+          "$ref": "#/$defs/textContext"
+        }
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start"],
+      "properties": {
+        "start": {
+          "$ref": "#/$defs/locator"
+        },
+        "end": {
+          "$ref": "#/$defs/locator"
+        }
+      }
+    },
+    "visual": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "src": {
+          "type": "string"
+        },
+        "alt": {
+          "type": "string"
+        },
+        "decorative": {
+          "type": "boolean"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "decorative": {
+                "const": false
+              }
+            },
+            "required": ["decorative"]
+          },
+          "then": {
+            "required": ["alt"]
+          }
+        }
+      ]
+    },
+    "item": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "id",
+        "target",
+        "label",
+        "text"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target": {
+          "$ref": "#/$defs/target"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "visual": {
+          "$ref": "#/$defs/visual"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "layer": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "id",
+        "type",
+        "label",
+        "items"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string"
+        },
+        "defaultVisible": {
+          "type": "boolean",
+          "default": false
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/item"
+          }
+        }
+      }
+    }
+  }
+}
