@@ -27,6 +27,11 @@ import { READING_SUPPORT_ACTION_KEY } from "./preferences";
 function ReadingSupportIcon(
   props: SVGProps<SVGElement>
 ) {
+  const {
+    ref: _unusedRef,
+    ...safeProps
+  } = props;
+
   return (
     <svg
       viewBox="0 0 24 24"
@@ -37,7 +42,7 @@ function ReadingSupportIcon(
       strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
-      {...props}
+      {...(safeProps as SVGProps<SVGSVGElement>)}
     >
       <path d="M4 5.5c2.5-.7 5-.2 8 1.5v12c-3-1.7-5.5-2.2-8-1.5z" />
       <path d="M20 5.5c-2.5-.7-5-.2-8 1.5v12c3-1.7 5.5-2.2 8-1.5z" />
