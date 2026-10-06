@@ -1,0 +1,24 @@
+body {
+  font-family: serif;
+  line-height: 1.5;
+  margin: 5%;
+}
+
+main {
+  max-width: 42em;
+  margin: 0 auto;
+}
+
+figure {
+  margin: 1.5em 0;
+}
+
+img,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.time {
+  font-variant-numeric: tabular-nums;
+}
