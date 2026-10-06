@@ -105,7 +105,7 @@ export function ReaderClient() {
           aria-label="Current Readium locator"
         >
           <strong>Current locator:</strong>{" "}
-          <code>{JSON.stringify(currentLocator.toJSON())}</code>
+          <code>{JSON.stringify(currentLocator.serialize())}</code>
         </output>
       ) : null}
     </ThStoreProvider>
