@@ -7,7 +7,6 @@ import {
   StatefulActionIcon,
   StatefulOverflowMenuItem,
   StatefulSheetWrapper,
-  useActionsPreferences,
   useAppDispatch,
   useAppSelector,
   useDocking,
@@ -16,6 +15,9 @@ import {
   type ThPlugin
 } from "@edrlab/thorium-web/reader";
 import {
+  useActionsPreferences
+} from "@edrlab/thorium-web/core/preferences";
+import {
   ThActionsTriggerVariant
 } from "@edrlab/thorium-web/core/components";
 
@@ -23,7 +25,7 @@ import { useOrlSession } from "./session";
 import { READING_SUPPORT_ACTION_KEY } from "./preferences";
 
 function ReadingSupportIcon(
-  props: SVGProps<SVGSVGElement>
+  props: SVGProps<SVGElement>
 ) {
   return (
     <svg
@@ -52,7 +54,7 @@ export function ReadingSupportTrigger({
   const profile = useAppSelector((state) => state.reader.profile);
   const actionState = useAppSelector((state) =>
     profile
-      ? state.actions.keys[profile][READING_SUPPORT_ACTION_KEY]
+      ? state.actions.keys[profile]?.[READING_SUPPORT_ACTION_KEY]
       : undefined
   );
   const dispatch = useAppDispatch();
@@ -110,7 +112,7 @@ export function ReadingSupportPanel({
   const profile = useAppSelector((state) => state.reader.profile);
   const actionState = useAppSelector((state) =>
     profile
-      ? state.actions.keys[profile][READING_SUPPORT_ACTION_KEY]
+      ? state.actions.keys[profile]?.[READING_SUPPORT_ACTION_KEY]
       : undefined
   );
   const dispatch = useAppDispatch();
