@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "start": "next start",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@edrlab/thorium-web": "1.6.0",
@@ -34,6 +36,7 @@
     "@types/node": "^22.19.7",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "@playwright/test": "1.63.0"
   }
 }
