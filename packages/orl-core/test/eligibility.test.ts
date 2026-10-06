@@ -56,6 +56,26 @@ describe("compareLocators", () => {
     ).toBe(1);
   });
 
+  it("matches ORL-relative resources against served URL prefixes", () => {
+    const servedPublication: PublicationIndex = {
+      readingOrder: [
+        "http://127.0.0.1:15080/webpub/demo/EPUB/chapter-01.xhtml",
+        "http://127.0.0.1:15080/webpub/demo/EPUB/chapter-02.xhtml"
+      ]
+    };
+
+    expect(
+      compareLocators(
+        locator(
+          "http://127.0.0.1:15080/webpub/demo/EPUB/chapter-02.xhtml",
+          { progression: 0.1 }
+        ),
+        locator("EPUB/chapter-01.xhtml", { progression: 0.9 }),
+        servedPublication
+      )
+    ).toBe(1);
+  });
+
   it("uses progression within the same resource", () => {
     expect(
       compareLocators(
