@@ -3,7 +3,7 @@ import addFormats from "ajv-formats";
 
 import schema from "../../../schema/orl-0.1.schema.json";
 
-import type { OrlPackage } from "./types.js";
+import type { OrlPackage } from "./types";
 
 export interface ValidationDiagnostic {
   level: "error" | "warning";
