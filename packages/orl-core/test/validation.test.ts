@@ -6,6 +6,10 @@ import {
   validateOrlPackage
 } from "../src/validate.js";
 
+function cloneFixture() {
+  return JSON.parse(JSON.stringify(fixture)) as typeof fixture;
+}
+
 describe("validateOrlPackage", () => {
   it("accepts the ALME demo ORL package", () => {
     const result = validateOrlPackage(fixture);
@@ -29,7 +33,7 @@ describe("validateOrlPackage", () => {
   });
 
   it("rejects duplicate item ids semantically", () => {
-    const copy = structuredClone(fixture);
+    const copy = cloneFixture();
     copy.layers[0]!.items[1]!.id = copy.layers[0]!.items[0]!.id;
 
     const result = validateOrlPackage(copy);
