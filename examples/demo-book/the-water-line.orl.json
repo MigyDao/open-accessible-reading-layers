@@ -1,0 +1,254 @@
+{
+  "$schema": "../../schema/orl-0.1.schema.json",
+  "schemaVersion": "0.1",
+  "id": "urn:uuid:orl-demo-the-water-line-support-v0.1",
+  "publication": {
+    "identifier": "urn:uuid:orl-demo-the-water-line-v0.1",
+    "title": "The Water Line",
+    "language": "en"
+  },
+  "metadata": {
+    "title": "The Water Line — Reading Support",
+    "description": "Author-provided ORL support layers for the ALME demo EPUB.",
+    "language": "en",
+    "provenance": "author",
+    "creator": [
+      {
+        "name": "Miguel Francis",
+        "id": "https://github.com/MigyDao"
+      }
+    ],
+    "license": "Apache-2.0",
+    "created": "2026-10-06T13:08:00-05:00",
+    "modified": "2026-10-06T13:08:00-05:00"
+  },
+  "layers": [
+    {
+      "id": "people",
+      "type": "people",
+      "label": "People",
+      "description": "Reminders about people introduced so far.",
+      "defaultVisible": false,
+      "items": [
+        {
+          "id": "person-ari",
+          "target": {
+            "start": {
+              "href": "EPUB/chapter-01.xhtml#ari-introduction",
+              "type": "application/xhtml+xml",
+              "locations": {
+                "fragments": ["ari-introduction"]
+              },
+              "text": {
+                "highlight": "Ari"
+              }
+            }
+          },
+          "label": "Ari",
+          "text": "A practical newcomer helping trace the failed water line.",
+          "data": {
+            "name": "Ari",
+            "role": "Viewpoint character"
+          }
+        },
+        {
+          "id": "person-mara",
+          "target": {
+            "start": {
+              "href": "EPUB/chapter-01.xhtml#mara-introduction",
+              "type": "application/xhtml+xml",
+              "locations": {
+                "fragments": ["mara-introduction"]
+              },
+              "text": {
+                "highlight": "Mara"
+              }
+            }
+          },
+          "label": "Mara",
+          "text": "The mechanic who keeps the hillside workshop running.",
+          "data": {
+            "name": "Mara",
+            "role": "Mechanic"
+          }
+        },
+        {
+          "id": "person-jo",
+          "target": {
+            "start": {
+              "href": "EPUB/chapter-02.xhtml#jo-introduction",
+              "type": "application/xhtml+xml",
+              "locations": {
+                "fragments": ["jo-introduction"]
+              },
+              "text": {
+                "highlight": "Jo"
+              }
+            }
+          },
+          "label": "Jo",
+          "text": "The cultivator responsible for the lower garden.",
+          "data": {
+            "name": "Jo",
+            "role": "Cultivator"
+          }
+        }
+      ]
+    },
+    {
+      "id": "timeline",
+      "type": "timeline",
+      "label": "Timeline",
+      "description": "Events revealed in story order.",
+      "defaultVisible": false,
+      "items": [
+        {
+          "id": "event-0810",
+          "target": {
+            "start": {
+              "href": "EPUB/chapter-01.xhtml#event-0810",
+              "type": "application/xhtml+xml",
+              "locations": {
+                "fragments": ["event-0810"]
+              }
+            }
+          },
+          "label": "08:10",
+          "text": "Ari arrives at the hillside workshop.",
+          "data": {
+            "displayTime": "08:10",
+            "sequence": 1
+          }
+        },
+        {
+          "id": "event-0905",
+          "target": {
+            "start": {
+              "href": "EPUB/chapter-02.xhtml#event-0905",
+              "type": "application/xhtml+xml",
+              "locations": {
+                "fragments": ["event-0905"]
+              }
+            }
+          },
+          "label": "09:05",
+          "text": "Jo reports that the lower beds have been dry since dawn.",
+          "data": {
+            "displayTime": "09:05",
+            "sequence": 2
+          }
+        },
+        {
+          "id": "event-1020",
+          "target": {
+            "start": {
+              "href": "EPUB/chapter-03.xhtml#event-1020",
+              "type": "application/xhtml+xml",
+              "locations": {
+                "fragments": ["event-1020"]
+              }
+            }
+          },
+          "label": "10:20",
+          "text": "The cracked coupling is found.",
+          "data": {
+            "displayTime": "10:20",
+            "sequence": 3
+          }
+        },
+        {
+          "id": "event-1100",
+          "target": {
+            "start": {
+              "href": "EPUB/chapter-03.xhtml#event-1100",
+              "type": "application/xhtml+xml",
+              "locations": {
+                "fragments": ["event-1100"]
+              }
+            }
+          },
+          "label": "11:00",
+          "text": "Mara returns with repair parts.",
+          "data": {
+            "displayTime": "11:00",
+            "sequence": 4
+          }
+        },
+        {
+          "id": "event-1135",
+          "target": {
+            "start": {
+              "href": "EPUB/chapter-04.xhtml#event-1135",
+              "type": "application/xhtml+xml",
+              "locations": {
+                "fragments": ["event-1135"]
+              }
+            }
+          },
+          "label": "11:35",
+          "text": "Water flow is restored.",
+          "data": {
+            "displayTime": "11:35",
+            "sequence": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "reentry",
+      "type": "reentry",
+      "label": "Re-entry Context",
+      "description": "Optional context for resuming the story.",
+      "defaultVisible": false,
+      "items": [
+        {
+          "id": "reentry-investigation",
+          "target": {
+            "start": {
+              "href": "EPUB/chapter-01.xhtml",
+              "type": "application/xhtml+xml",
+              "locations": {
+                "progression": 0
+              }
+            },
+            "end": {
+              "href": "EPUB/chapter-03.xhtml",
+              "type": "application/xhtml+xml",
+              "locations": {
+                "progression": 0
+              }
+            }
+          },
+          "label": "Where you are",
+          "text": "The group is tracing why water is not reaching the lower garden.",
+          "data": {
+            "summary": "The water line has failed somewhere between the tank and the garden.",
+            "openQuestions": [
+              "Where is the flow being interrupted?"
+            ]
+          }
+        },
+        {
+          "id": "reentry-repair",
+          "target": {
+            "start": {
+              "href": "EPUB/chapter-03.xhtml",
+              "type": "application/xhtml+xml",
+              "locations": {
+                "progression": 0
+              }
+            }
+          },
+          "label": "Where you are",
+          "text": "The fault has been found and the group is repairing the cracked coupling.",
+          "data": {
+            "summary": "The problem is now known to be a mechanical failure at the coupling.",
+            "openQuestions": [
+              "Will the repair restore flow to the garden?"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
