@@ -4,7 +4,7 @@ import fixture from "../../../examples/demo-book/the-water-line.orl.json";
 import {
   publicationMatches,
   validateOrlPackage
-} from "../src/validate.js";
+} from "../src/validate";
 
 function cloneFixture() {
   return JSON.parse(JSON.stringify(fixture)) as typeof fixture;
