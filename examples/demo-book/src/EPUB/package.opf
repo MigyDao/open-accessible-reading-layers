@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package
+  xmlns="http://www.idpf.org/2007/opf"
+  version="3.0"
+  unique-identifier="pub-id"
+  xml:lang="en">
+  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <dc:identifier id="pub-id">urn:uuid:orl-demo-the-water-line-v0.1</dc:identifier>
+    <dc:title>The Water Line</dc:title>
+    <dc:language>en</dc:language>
+    <dc:creator>Miguel Francis / A Likkle More Eco</dc:creator>
+    <meta property="dcterms:modified">2026-10-06T18:00:00Z</meta>
+  </metadata>
+
+  <manifest>
+    <item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>
+    <item id="css" href="styles.css" media-type="text/css"/>
+    <item id="chapter-01" href="chapter-01.xhtml" media-type="application/xhtml+xml"/>
+    <item id="chapter-02" href="chapter-02.xhtml" media-type="application/xhtml+xml"/>
+    <item id="chapter-03" href="chapter-03.xhtml" media-type="application/xhtml+xml"/>
+    <item id="chapter-04" href="chapter-04.xhtml" media-type="application/xhtml+xml"/>
+    <item id="water-line-diagram" href="images/water-line.svg" media-type="image/svg+xml"/>
+  </manifest>
+
+  <spine>
+    <itemref idref="chapter-01"/>
+    <itemref idref="chapter-02"/>
+    <itemref idref="chapter-03"/>
+    <itemref idref="chapter-04"/>
+  </spine>
+</package>
