@@ -33,3 +33,6 @@ jobs:
 
       - name: Build demo EPUB
         run: bash scripts/build-demo-epub.sh
+
+      - name: Verify Readium publication ingestion
+        run: bash scripts/verify-readium-demo.sh
