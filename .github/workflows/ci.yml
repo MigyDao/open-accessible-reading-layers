@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   core:
-    name: ORL core
+    name: ORL core and fixtures
     runs-on: ubuntu-latest
 
     steps:
@@ -28,5 +28,8 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Test
+      - name: Test ORL core
         run: npm test
+
+      - name: Build demo EPUB
+        run: bash scripts/build-demo-epub.sh
