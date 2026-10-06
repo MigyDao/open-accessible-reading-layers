@@ -4,7 +4,7 @@ import type {
   OrlLocator,
   OrlTarget,
   PublicationIndex
-} from "./types.js";
+} from "./types";
 
 function compareNumber(a: number, b: number): -1 | 0 | 1 {
   if (a < b) return -1;
