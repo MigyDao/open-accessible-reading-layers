@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 800 240"
+  role="img"
+  aria-labelledby="title desc">
+  <title id="title">Water line system</title>
+  <desc id="desc">
+    A simple black-and-white diagram. The upper tank feeds a pipe past the
+    workshop, through a coupling, and down to the lower garden.
+  </desc>
+
+  <rect x="40" y="55" width="120" height="90" fill="none" stroke="black" stroke-width="4"/>
+  <text x="100" y="105" text-anchor="middle" font-size="22">Tank</text>
+
+  <line x1="160" y1="100" x2="300" y2="100" stroke="black" stroke-width="5"/>
+
+  <rect x="300" y="55" width="150" height="90" fill="none" stroke="black" stroke-width="4"/>
+  <text x="375" y="105" text-anchor="middle" font-size="22">Workshop</text>
+
+  <line x1="450" y1="100" x2="540" y2="100" stroke="black" stroke-width="5"/>
+  <circle cx="560" cy="100" r="20" fill="none" stroke="black" stroke-width="4"/>
+  <text x="560" y="165" text-anchor="middle" font-size="20">Coupling</text>
+
+  <line x1="580" y1="100" x2="720" y2="155" stroke="black" stroke-width="5"/>
+  <rect x="650" y="155" width="110" height="55" fill="none" stroke="black" stroke-width="4"/>
+  <text x="705" y="190" text-anchor="middle" font-size="20">Garden</text>
+</svg>
