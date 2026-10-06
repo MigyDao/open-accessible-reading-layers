@@ -31,6 +31,9 @@ jobs:
       - name: Test ORL core
         run: npm test
 
+      - name: Build reference reader
+        run: npm run build --workspace @open-reading-layers/reference-reader
+
       - name: Build demo EPUB
         run: bash scripts/build-demo-epub.sh
 
