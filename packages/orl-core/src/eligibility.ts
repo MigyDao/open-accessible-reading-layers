@@ -27,9 +27,15 @@ function readingOrderIndex(
 ): number {
   const target = normalizeResourceHref(locator.href);
 
-  return publication.readingOrder.findIndex(
-    (href) => normalizeResourceHref(href) === target
-  );
+  return publication.readingOrder.findIndex((href) => {
+    const candidate = normalizeResourceHref(href);
+
+    return (
+      candidate === target ||
+      candidate.endsWith(`/${target}`) ||
+      target.endsWith(`/${candidate}`)
+    );
+  });
 }
 
 /**
