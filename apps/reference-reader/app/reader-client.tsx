@@ -1,12 +1,23 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import type { Locator } from "@readium/shared";
+import type { Locator, Publication } from "@readium/shared";
 import {
   StatefulReaderWrapper,
   ThStoreProvider,
   usePublication
 } from "@edrlab/thorium-web/reader";
+
+import {
+  OrlSessionProvider,
+  useOrlSession
+} from "../orl/session";
+import {
+  createOrlEpubPlugins
+} from "../orl/reading-support-plugin";
+import {
+  orlReaderPreferences
+} from "../orl/preferences";
 
 function toBase64Url(value: string): string {
   const bytes = new TextEncoder().encode(value);
@@ -35,11 +46,63 @@ function demoManifestUrl(): string {
   );
 }
 
-export function ReaderClient() {
-  const manifestUrl = useMemo(demoManifestUrl, []);
+function OrlReader({
+  publication,
+  profile,
+  localDataKey
+}: {
+  publication: Publication;
+  profile: "epub" | "webPub" | "audio" | null | undefined;
+  localDataKey: string | null;
+}) {
   const storedLocator = useRef<Locator | undefined>(undefined);
   const [currentLocator, setCurrentLocator] =
     useState<Locator | undefined>(undefined);
+  const { updateCurrentLocator } = useOrlSession();
+
+  const positionStorage = useMemo(
+    () => ({
+      get: () => storedLocator.current,
+      set: async (locator: Locator) => {
+        storedLocator.current = locator;
+        setCurrentLocator(locator);
+        await updateCurrentLocator(locator);
+      }
+    }),
+    [updateCurrentLocator]
+  );
+
+  return (
+    <ThStoreProvider>
+      <StatefulReaderWrapper
+        profile={profile}
+        publication={publication}
+        localDataKey={localDataKey}
+        positionStorage={positionStorage}
+        plugins={{
+          epub: createOrlEpubPlugins
+        }}
+        preferences={{
+          initialPreferences: orlReaderPreferences
+        }}
+      />
+
+      {process.env.NODE_ENV === "development" &&
+      currentLocator ? (
+        <output
+          className="reader-status"
+          aria-label="Current Readium locator"
+        >
+          <strong>Current locator:</strong>{" "}
+          <code>{JSON.stringify(currentLocator.serialize())}</code>
+        </output>
+      ) : null}
+    </ThStoreProvider>
+  );
+}
+
+export function ReaderClient() {
+  const manifestUrl = useMemo(demoManifestUrl, []);
 
   const {
     publication,
@@ -53,17 +116,6 @@ export function ReaderClient() {
       console.error("Publication loading error:", publicationError);
     }
   });
-
-  const positionStorage = useMemo(
-    () => ({
-      get: () => storedLocator.current,
-      set: (locator: Locator) => {
-        storedLocator.current = locator;
-        setCurrentLocator(locator);
-      }
-    }),
-    []
-  );
 
   if (error) {
     return (
@@ -90,24 +142,15 @@ export function ReaderClient() {
   }
 
   return (
-    <ThStoreProvider>
-      <StatefulReaderWrapper
-        profile={profile}
+    <OrlSessionProvider
+      publication={publication}
+      manifestUrl={manifestUrl}
+    >
+      <OrlReader
         publication={publication}
+        profile={profile}
         localDataKey={localDataKey}
-        positionStorage={positionStorage}
       />
-
-      {process.env.NODE_ENV === "development" &&
-      currentLocator ? (
-        <output
-          className="reader-status"
-          aria-label="Current Readium locator"
-        >
-          <strong>Current locator:</strong>{" "}
-          <code>{JSON.stringify(currentLocator.serialize())}</code>
-        </output>
-      ) : null}
-    </ThStoreProvider>
+    </OrlSessionProvider>
   );
 }
