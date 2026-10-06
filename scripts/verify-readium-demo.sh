@@ -35,13 +35,13 @@ trap cleanup EXIT
 SERVER_PID=$!
 
 for _ in $(seq 1 40); do
-  if curl -fsS "$BASE/list.json" >/dev/null 2>&1; then
+  if curl -fsS "$BASE/health" >/dev/null 2>&1; then
     break
   fi
   sleep 0.25
 done
 
-if ! curl -fsS "$BASE/list.json" >/dev/null; then
+if ! curl -fsS "$BASE/health" >/dev/null; then
   cat "$LOG" >&2
   echo "Readium server did not become ready." >&2
   exit 1
