@@ -39,20 +39,25 @@ ARCHIVE="$ARCHIVE_DIR/$ASSET"
 URL="https://github.com/readium/cli/releases/download/v$VERSION/$ASSET"
 
 if [[ ! -f "$ARCHIVE" ]]; then
-  curl -fL "$URL" -o "$ARCHIVE"
+  curl -fsSL "$URL" -o "$ARCHIVE"
 fi
 
-printf '%s  %s
-' "$SHA256" "$ARCHIVE" | sha256sum -c -
+if ! printf '%s  %s\n' "$SHA256" "$ARCHIVE" | sha256sum -c - >/dev/null; then
+  echo "Readium CLI checksum verification failed for $ASSET" >&2
+  exit 1
+fi
 
 rm -rf "$BIN_DIR"/*
 tar -xzf "$ARCHIVE" -C "$BIN_DIR"
 
-READIUM_BIN="$(find "$BIN_DIR" -type f -name readium -perm -111 | head -n 1)"
+READIUM_BIN="$(find "$BIN_DIR" -type f -name readium -perm -111 -print -quit)"
 
-if [[ -z "$READIUM_BIN" ]]; then
+if [[ -z "$READIUM_BIN" || ! -x "$READIUM_BIN" ]]; then
   echo "Readium executable not found after extracting $ASSET" >&2
+  find "$BIN_DIR" -maxdepth 2 -type f -print >&2 || true
   exit 1
 fi
 
-echo "$READIUM_BIN"
+# stdout is intentionally reserved for the resolved executable path so callers
+# can safely use command substitution.
+printf '%s\n' "$READIUM_BIN"
