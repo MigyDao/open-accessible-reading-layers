@@ -1,3 +1,3 @@
-export * from "./types.js";
-export * from "./eligibility.js";
-export * from "./validate.js";
+export * from "./types";
+export * from "./eligibility";
+export * from "./validate";
