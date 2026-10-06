@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you use or build on Open Accessible Reading Layers, please cite this project."
+title: "Open Accessible Reading Layers"
+type: software
+authors:
+  - family-names: "Francis"
+    given-names: "Miguel"
+repository-code: "https://github.com/MigyDao/open-accessible-reading-layers"
+url: "https://github.com/MigyDao/open-accessible-reading-layers"
+license: "Apache-2.0"
+abstract: >-
+  An open, reader-controlled support-layer system for digital reading,
+  designed to make publications easier to orient within, remember, and
+  re-enter while preserving reader choice and interoperability.
+keywords:
+  - accessibility
+  - epub
+  - reading
+  - assistive technology
+  - cognitive accessibility
+  - readium
