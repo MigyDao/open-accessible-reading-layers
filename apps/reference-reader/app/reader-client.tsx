@@ -68,6 +68,9 @@ function OrlReader({
         storedLocator.current = locator;
         setCurrentLocator(locator);
         await updateCurrentLocator(locator);
+        window.dispatchEvent(new CustomEvent("orl:position-changed", {
+          detail: locator.serialize()
+        }));
       }
     }),
     [updateCurrentLocator]
@@ -86,6 +89,7 @@ function OrlReader({
         preferences={{
           initialPreferences: orlReaderPreferences
         }}
+        i18n={{ load: "languageOnly" }}
       />
 
       {process.env.NODE_ENV === "development" &&
