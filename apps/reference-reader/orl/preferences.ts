@@ -36,7 +36,7 @@ export const orlReaderPreferences =
         [ThSettingsKeys.fontFamily]: {
           default: Object.fromEntries(
             Object.entries(defaultFontCollection).filter(
-              ([, font]) => font.source.type === "system" || font.source.type === "local"
+              ([, font]) => font.source.type === "system"
             )
           )
         }
