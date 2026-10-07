@@ -47,3 +47,11 @@ jobs:
       - name: Run reference-reader browser E2E
         run: npm run e2e
         working-directory: apps/reference-reader
+
+      - name: Preserve browser acceptance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-acceptance
+          path: apps/reference-reader/test-results/
+          retention-days: 7

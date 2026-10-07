@@ -3,7 +3,9 @@
   "version": "0.1.0-dev.0",
   "private": true,
   "scripts": {
+    "predev": "node ../../scripts/prepare-reader-assets.mjs",
     "dev": "next dev",
+    "prebuild": "node ../../scripts/prepare-reader-assets.mjs",
     "build": "next build",
     "typecheck": "tsc --noEmit",
     "start": "next start",

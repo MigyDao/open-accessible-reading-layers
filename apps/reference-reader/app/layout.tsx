@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 
+import "@edrlab/thorium-web/reader/styles";
+import "@edrlab/thorium-web/epub/styles";
+
 import "./styles.css";
 
 export const metadata: Metadata = {
-  title: "Open Accessible Reading Layers — Reference Reader",
+  title: "Open Accessible Reading Layers - Reference Reader",
   description:
     "Reference implementation for reader-controlled Open Reading Layers."
 };
