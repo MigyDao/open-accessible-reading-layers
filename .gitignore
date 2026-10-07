@@ -11,3 +11,8 @@ coverage/
 
 .tools/
 examples/demo-book/dist/
+apps/reference-reader/public/locales/
+apps/reference-reader/public/fonts/
+apps/reference-reader/test-results/
+apps/reference-reader/playwright-report/
+*.tsbuildinfo

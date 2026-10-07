@@ -1,5 +1,18 @@
 import { expect, test } from "@playwright/test";
 
+test.beforeEach(async ({ page }) => {
+  page.on("pageerror", (error) => console.log("Browser error:", error.message));
+  page.on("console", (message) => {
+    if (message.type() === "error") console.log("Browser console:", message.text());
+  });
+});
+
+test.afterEach(async ({ page }, testInfo) => {
+  if (testInfo.status !== testInfo.expectedStatus) {
+    console.log("Reader snapshot:", await page.locator("body").ariaSnapshot());
+  }
+});
+
 test("keeps future people hidden and reveals prior people after navigation", async ({
   page
 }) => {
