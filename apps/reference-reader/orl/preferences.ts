@@ -1,6 +1,7 @@
 import {
   createPreferences,
   defaultPreferences,
+  defaultFontCollection,
   ThActionsKeys,
   ThBreakpoints,
   ThDockingTypes,
@@ -27,6 +28,20 @@ type OrlPreferenceKeys = {
 export const orlReaderPreferences =
   createPreferences<OrlPreferenceKeys>({
     ...defaultPreferences,
+    // This local reference reader must not wait on a third-party font service.
+    settings: {
+      ...defaultPreferences.settings,
+      keys: {
+        ...defaultPreferences.settings.keys,
+        [ThSettingsKeys.fontFamily]: {
+          default: Object.fromEntries(
+            Object.entries(defaultFontCollection).filter(
+              ([, font]) => font.source.type === "system" || font.source.type === "local"
+            )
+          )
+        }
+      }
+    },
     actions: {
       ...defaultPreferences.actions,
       reflowOrder: [

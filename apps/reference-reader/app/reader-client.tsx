@@ -4,6 +4,7 @@ import { useMemo, useRef, useState } from "react";
 import type { Locator, Publication } from "@readium/shared";
 import {
   StatefulReaderWrapper,
+  StatefulGlobalPreferencesProvider,
   ThStoreProvider,
   usePublication
 } from "@edrlab/thorium-web/reader";
@@ -158,7 +159,9 @@ function PublicationReader() {
 export function ReaderClient() {
   return (
     <ThStoreProvider>
-      <PublicationReader />
+      <StatefulGlobalPreferencesProvider initialPreferences={{ locale: "en" }}>
+        <PublicationReader />
+      </StatefulGlobalPreferencesProvider>
     </ThStoreProvider>
   );
 }
