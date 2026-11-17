@@ -5,6 +5,13 @@
     "main"
   ],
   "permissions": [
-    "core:default"
+    "core:default",
+    "allow-list-books",
+    "allow-import-book",
+    "allow-open-book",
+    "allow-save-book",
+    "allow-remove-book",
+    "allow-import-layers",
+    "allow-export-layers"
   ]
 }

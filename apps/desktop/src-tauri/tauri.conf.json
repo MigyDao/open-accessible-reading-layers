@@ -32,9 +32,6 @@
     "targets": [
       "nsis"
     ],
-    "resources": {
-      "../../../examples/demo-book/src/": "demo/"
-    },
     "shortDescription": "Offline EPUB reading with optional reading support",
     "windows": {
       "nsis": {
@@ -44,6 +41,11 @@
         "type": "downloadBootstrapper",
         "silent": true
       }
-    }
+    },
+    "icon": [
+      "icons/icon.ico",
+      "icons/32x32.png",
+      "icons/128x128.png"
+    ]
   }
 }

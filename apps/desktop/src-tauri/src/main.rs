@@ -430,6 +430,14 @@ async fn export_layers(package: Value) -> Result<bool, String> {
     else {
         return Ok(false);
     };
+    if p.path()
+        .extension()
+        .and_then(|v| v.to_str())
+        .map(|s| s.eq_ignore_ascii_case("json"))
+        != Some(true)
+    {
+        return Err("Choose a .json destination; EPUB files are never overwritten".into());
+    }
     atomic(p.path(), &package)?;
     Ok(true)
 }

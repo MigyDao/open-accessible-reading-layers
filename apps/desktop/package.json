@@ -9,7 +9,8 @@
     "build": "next build",
     "typecheck": "tsc --noEmit",
     "tauri": "tauri",
-    "package": "tauri build --bundles nsis"
+    "package": "tauri build --bundles nsis",
+    "prepackage": "tauri icon app-icon.svg --output src-tauri/icons"
   },
   "dependencies": {
     "@edrlab/thorium-web": "1.6.0",

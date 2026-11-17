@@ -8,7 +8,7 @@
     "language": "en"
   },
   "metadata": {
-    "title": "The Water Line — Reading Support",
+    "title": "The Water Line - Reading Support",
     "description": "Author-provided ORL support layers for the ALME demo EPUB.",
     "language": "en",
     "provenance": "author",
@@ -37,7 +37,9 @@
               "href": "EPUB/chapter-01.xhtml#ari-introduction",
               "type": "application/xhtml+xml",
               "locations": {
-                "fragments": ["ari-introduction"]
+                "fragments": [
+                  "ari-introduction"
+                ]
               },
               "text": {
                 "highlight": "Ari"
@@ -58,7 +60,9 @@
               "href": "EPUB/chapter-01.xhtml#mara-introduction",
               "type": "application/xhtml+xml",
               "locations": {
-                "fragments": ["mara-introduction"]
+                "fragments": [
+                  "mara-introduction"
+                ]
               },
               "text": {
                 "highlight": "Mara"
@@ -79,7 +83,9 @@
               "href": "EPUB/chapter-02.xhtml#jo-introduction",
               "type": "application/xhtml+xml",
               "locations": {
-                "fragments": ["jo-introduction"]
+                "fragments": [
+                  "jo-introduction"
+                ]
               },
               "text": {
                 "highlight": "Jo"
@@ -106,10 +112,12 @@
           "id": "event-0810",
           "target": {
             "start": {
-              "href": "EPUB/chapter-01.xhtml#event-0810",
+              "href": "EPUB/chapter-01.xhtml#ari-introduction",
               "type": "application/xhtml+xml",
               "locations": {
-                "fragments": ["event-0810"]
+                "fragments": [
+                  "ari-introduction"
+                ]
               }
             }
           },
@@ -124,10 +132,12 @@
           "id": "event-0905",
           "target": {
             "start": {
-              "href": "EPUB/chapter-02.xhtml#event-0905",
+              "href": "EPUB/chapter-02.xhtml#jo-introduction",
               "type": "application/xhtml+xml",
               "locations": {
-                "fragments": ["event-0905"]
+                "fragments": [
+                  "jo-introduction"
+                ]
               }
             }
           },
@@ -142,10 +152,12 @@
           "id": "event-1020",
           "target": {
             "start": {
-              "href": "EPUB/chapter-03.xhtml#event-1020",
+              "href": "EPUB/chapter-03.xhtml#fault-located",
               "type": "application/xhtml+xml",
               "locations": {
-                "fragments": ["event-1020"]
+                "fragments": [
+                  "fault-located"
+                ]
               }
             }
           },
@@ -163,7 +175,9 @@
               "href": "EPUB/chapter-03.xhtml#event-1100",
               "type": "application/xhtml+xml",
               "locations": {
-                "fragments": ["event-1100"]
+                "fragments": [
+                  "event-1100"
+                ]
               }
             }
           },
@@ -178,10 +192,12 @@
           "id": "event-1135",
           "target": {
             "start": {
-              "href": "EPUB/chapter-04.xhtml#event-1135",
+              "href": "EPUB/chapter-04.xhtml#flow-restored",
               "type": "application/xhtml+xml",
               "locations": {
-                "fragments": ["event-1135"]
+                "fragments": [
+                  "flow-restored"
+                ]
               }
             }
           },
@@ -205,17 +221,21 @@
           "id": "reentry-investigation",
           "target": {
             "start": {
-              "href": "EPUB/chapter-01.xhtml",
+              "href": "EPUB/chapter-01.xhtml#ari-introduction",
               "type": "application/xhtml+xml",
               "locations": {
-                "progression": 0
+                "fragments": [
+                  "ari-introduction"
+                ]
               }
             },
             "end": {
-              "href": "EPUB/chapter-03.xhtml",
+              "href": "EPUB/chapter-03.xhtml#fault-located",
               "type": "application/xhtml+xml",
               "locations": {
-                "progression": 0
+                "fragments": [
+                  "fault-located"
+                ]
               }
             }
           },
@@ -232,10 +252,12 @@
           "id": "reentry-repair",
           "target": {
             "start": {
-              "href": "EPUB/chapter-03.xhtml",
+              "href": "EPUB/chapter-03.xhtml#fault-located",
               "type": "application/xhtml+xml",
               "locations": {
-                "progression": 0
+                "fragments": [
+                  "fault-located"
+                ]
               }
             }
           },
