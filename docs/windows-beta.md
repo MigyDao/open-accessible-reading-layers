@@ -59,3 +59,8 @@ Personal entry authoring **is** already part of V1: Reading Support → Add pers
 - Resize wide again and confirm the temporary automatic page/scroll adjustment is restored, unless the layout was manually overridden. Try the toolbar button in each direction; verify user choice and location handling.
 - Use **Reading Support → Add personal entry here**, then test creating, editing, exporting and reimporting a personal ORL entry if desired.
 - Keep full Windows functional, accessibility and previous browser E2E acceptance open until Miguel reports results. No additional optional automated tests or agent-driven computer GUI acceptance.
+
+## Beta.5 — native scroll synchronization and visible chapter controls
+After beta.4 user testing, we found that setting only Redux `settings.scroll` did not change the actual Readium navigator. The layout control now awaits `submitPreferences({scroll})` before synchronizing Redux using `getSetting("scroll")`, following Thorium Web's native layout control. Automatic native scrolling is requested when the reading surface becomes narrow (<840px) **or short** (<600px), after the EPUB navigator is ready; the manual toggle remains available.
+
+Scroll mode uses Thorium's supported stacked layout, which keeps the built-in previous/next chapter footer in view instead of concealing it behind hover-only controls. Reader dimensions are bounded to the window. Keep previously imported EPUBs, locators, preferences, personal ORL layers, JSON compatibility, and Reading Support as a side panel. The native reading result must be manually accepted by Miguel before closing #9 or merging PR #5. No additional optional testing or computer-use acceptance.

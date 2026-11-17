@@ -10,3 +10,5 @@
 /* Readium scroll/page layout is controlled by reader settings, not iframe CSS overflow. */
 .app-bar .layout-mode{white-space:nowrap;flex-shrink:0}
 @media(max-width:850px){.app-bar .layout-mode{padding:7px 10px}.app-bar strong{min-width:0}}
+/* Keep the embedded reader within the actual available window height. */
+.reader-body,.reading-surface{min-height:0}
