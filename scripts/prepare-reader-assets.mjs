@@ -1,3 +1,4 @@
+import "./generate-orl-validator.mjs";
 import { cp, mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";

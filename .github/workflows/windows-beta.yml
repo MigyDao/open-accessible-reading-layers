@@ -7,6 +7,8 @@ on:
       - 'schema/**'
       - 'examples/**'
       - 'scripts/prepare-desktop.mjs'
+      - 'scripts/generate-orl-validator.mjs'
+      - 'package-lock.json'
       - '.github/workflows/windows-beta.yml'
   workflow_dispatch:
 permissions:
@@ -17,6 +19,8 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -25,7 +29,7 @@ jobs:
         with:
           workspaces: apps/desktop/src-tauri -> target
       - name: Install dependencies
-        run: npm install
+        run: npm ci
       - name: Compile desktop TypeScript
         run: npm run typecheck --workspace @open-reading-layers/desktop
       - name: Package Windows installer
