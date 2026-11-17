@@ -21,7 +21,7 @@ export default function Desktop(){
   useEffect(()=>{void refresh().catch(e=>setMessage(errorText(e)))},[refresh]);
   async function open(book:Book){setBusy(true);try{setOpened({book,data:await invoke<Opened>("open_book",{id:book.id})});setMessage("")}catch(e){setMessage(errorText(e))}finally{setBusy(false)}}
   async function importBook(){setBusy(true);try{const id=await invoke<string|null>("import_book");await refresh();if(id){const list=await invoke<Book[]>("list_books");const book=list.find(b=>b.id===id);if(book)await open(book)}}catch(e){setMessage(errorText(e))}finally{setBusy(false)}}
-  if(opened)return <ThStoreProvider key={opened.book.id}><StatefulGlobalPreferencesProvider initialPreferences={{locale:"en"}}>
+  if(opened)return <ThStoreProvider key={opened.book.id} storageKey={"orl-preferences-"+opened.book.id}><StatefulGlobalPreferencesProvider initialPreferences={{locale:"en"}}>
     <PublicationReader book={opened.book} data={opened.data} onClose={()=>{setOpened(null);void refresh();setTimeout(()=>libraryHeading.current?.focus(),0)}}/>
   </StatefulGlobalPreferencesProvider></ThStoreProvider>;
   return <main className="library">

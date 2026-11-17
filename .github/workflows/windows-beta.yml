@@ -21,6 +21,9 @@ jobs:
         with:
           node-version: 24
       - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: apps/desktop/src-tauri -> target
       - name: Install dependencies
         run: npm install
       - name: Compile desktop TypeScript
@@ -41,5 +44,7 @@ jobs:
             apps/desktop/src-tauri/target/release/bundle/SOURCE.txt
             apps/desktop/src-tauri/target/release/bundle/SHA256.txt
             docs/windows-beta.md
+            package-lock.json
+            apps/desktop/src-tauri/Cargo.lock
           retention-days: 30
 

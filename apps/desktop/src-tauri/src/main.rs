@@ -469,6 +469,8 @@ fn serve(app: &tauri::AppHandle, uri: &tauri::http::Uri) -> Result<(Vec<u8>, Str
             .as_object_mut()
             .ok_or("Missing manifest")?
             .remove("positions");
+        manifest["metadata"]["conformsTo"] =
+            json!(["https://readium.org/webpub-manifest/profiles/epub"]);
         manifest["links"] = json!([{"rel":"self","href":format!("http://orl.localhost/{id}/manifest.json"),"type":"application/webpub+json"},{"rel":"http://readium.org/position-list","href":"positions.json","type":"application/vnd.readium.position-list+json"}]);
         return Ok((
             serde_json::to_vec(&manifest).map_err(|e| e.to_string())?,
