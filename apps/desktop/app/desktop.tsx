@@ -16,15 +16,25 @@ const readerPreferences=createPreferences({...defaultPreferences,settings:{...de
 function errorText(e:unknown){return e instanceof Error?e.message:String(e)}
 export default function Desktop(){
   const [books,setBooks]=useState<Book[]>([]),[opened,setOpened]=useState<{book:Book;data:Opened}|null>(null),[message,setMessage]=useState(""),[busy,setBusy]=useState(false);
-  const libraryHeading=useRef<HTMLHeadingElement>(null);
+  const libraryHeading=useRef<HTMLHeadingElement>(null),library=useRef<HTMLElement>(null),libraryScroll=useRef(0),lastBook=useRef<string|null>(null);
   const refresh=useCallback(async()=>setBooks(await invoke<Book[]>("list_books")),[]);
   useEffect(()=>{void refresh().catch(e=>setMessage(errorText(e)))},[refresh]);
-  async function open(book:Book){setBusy(true);try{setOpened({book,data:await invoke<Opened>("open_book",{id:book.id})});setMessage("")}catch(e){setMessage(errorText(e))}finally{setBusy(false)}}
+  useEffect(()=>{
+    if(opened||!lastBook.current)return;
+    const frame=requestAnimationFrame(()=>{
+      if(library.current)library.current.scrollTop=libraryScroll.current;
+      const button=document.getElementById("continue-"+lastBook.current);
+      if(button){button.focus({preventScroll:true});button.scrollIntoView({block:"nearest"})}
+      else libraryHeading.current?.focus();
+    });
+    return ()=>cancelAnimationFrame(frame);
+  },[opened]);
+  async function open(book:Book){libraryScroll.current=library.current?.scrollTop??0;lastBook.current=book.id;setBusy(true);try{setOpened({book,data:await invoke<Opened>("open_book",{id:book.id})});setMessage("")}catch(e){setMessage(errorText(e))}finally{setBusy(false)}}
   async function importBook(){setBusy(true);try{const id=await invoke<string|null>("import_book");await refresh();if(id){const list=await invoke<Book[]>("list_books");const book=list.find(b=>b.id===id);if(book)await open(book)}}catch(e){setMessage(errorText(e))}finally{setBusy(false)}}
   if(opened)return <ThStoreProvider key={opened.book.id} storageKey={"orl-preferences-"+opened.book.id}><StatefulGlobalPreferencesProvider initialPreferences={{locale:"en"}}>
-    <PublicationReader book={opened.book} data={opened.data} onClose={()=>{setOpened(null);void refresh();setTimeout(()=>libraryHeading.current?.focus(),0)}}/>
+    <PublicationReader book={opened.book} data={opened.data} onClose={()=>{setOpened(null);void refresh()}}/>
   </StatefulGlobalPreferencesProvider></ThStoreProvider>;
-  return <main className="library">
+  return <main className="library" ref={library} tabIndex={0} aria-label="Book library">
     <p className="eyebrow">ORL � WINDOWS V1 BETA</p><h1 tabIndex={-1} ref={libraryHeading}>A little support.<br/>Your own reading.</h1>
     <p className="intro">Read DRM-free EPUB books offline. Bring people, timelines and context back into view when you need them.</p>
     <button className="primary" onClick={()=>void importBook()} disabled={busy}>Import EPUB</button>
@@ -32,8 +42,8 @@ export default function Desktop(){
     <p role="status">{message}{busy?" Opening.":""}</p>
     <section aria-labelledby="library-heading"><h2 id="library-heading">Your library</h2>
     <div className="books">{books.map(book=><article className="book" key={book.id}>
-      <div className="book-cover" aria-hidden="true">ORL</div><h3>{book.title}</h3>
-      <button onClick={()=>void open(book)} disabled={busy}>Continue reading</button>
+      <h3>{book.title}</h3><button className="book-cover" aria-label={"Open "+book.title} onClick={()=>void open(book)} disabled={busy}><span aria-hidden="true">ORL</span></button>
+      <button id={"continue-"+book.id} aria-label={"Continue reading "+book.title} onClick={()=>void open(book)} disabled={busy}>Continue reading</button>
       <button className="quiet" onClick={async()=>{if(!window.confirm("Remove this app copy and its local support/position? Original EPUB stays untouched. Export personal layers first."))return;
         try{await invoke("remove_book",{id:book.id});await refresh()}catch(e){setMessage(errorText(e))}}}>Remove from library</button>
     </article>)}</div></section>
