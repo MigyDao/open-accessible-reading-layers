@@ -42,3 +42,20 @@ npm run package --workspace @open-reading-layers/desktop
 
 The installer is emitted under apps/desktop/src-tauri/target/release/bundle/nsis. The Windows V1 beta workflow also records the source commit and installer SHA-256. Existing browser CI remains a separate requirement; a packaged beta does not imply it passed.
 
+
+## Beta.4 — responsive reading layout and editor scope
+
+In beta.3 the library and prose became readable, but resizing a paginated EPUB to one column left the next portion of the book inaccessible by vertical scrolling. This was not the same as the Home/Library overflow problem: Readium's paginated layout deliberately uses page turns. The ORL app does **not** apply CSS overflow to the publication iframe.
+
+For reflowable EPUBs, ORL now observes the actual reader surface width (including reductions caused by opening the Reading Support side panel). Below 840 CSS pixels, it switches to Readium's built-in scroll mode; returning to wider space restores the former paginated mode if the change was automatic during this reading session. A labelled **Scroll view / Page view** button in the ORL toolbar allows manual overrides, including at compact sizes. The normal Thorium settings remain available. This is only for reflowable EPUBs, not fixed-layout books. Existing source EPUBs, per-book IDs, saved locators, layer packages and app data remain unchanged. The mode itself lives in Thorium's existing per-book stored preferences; relaunching after closing a narrow window may retain Scroll view until manually switched.
+
+Personal entry authoring **is** already part of V1: Reading Support → Add personal entry here at a current locator; create, edit or delete eligible personal People, Timeline and Re-entry entries, and import/export ORL JSON. A separate author project workspace for whole-book entry management, future anchors, magic systems and versioned inventories is a post-V1 proposal (#10), not included in this narrow-window repair.
+
+### Manual beta.4 acceptance (Miguel only)
+- Back up application data, then install beta.4 over the existing beta.3 installation; do **not** uninstall or reset data.
+- Confirm the existing library, imported The Water Line entries, reading position and settings remain available.
+- With the reader wide, check that paginated columns still work. Resize below 840px: confirm the toolbar shows **Scroll view** and wheel/trackpad/keyboard vertical navigation reaches text below the viewport.
+- Open Reading Support and observe that narrowing of the reader surface still leaves the prose reachable. Confirm People/Timeline/Re-entry eligibility follows position without spoilers.
+- Resize wide again and confirm the temporary automatic page/scroll adjustment is restored, unless the layout was manually overridden. Try the toolbar button in each direction; verify user choice and location handling.
+- Use **Reading Support → Add personal entry here**, then test creating, editing, exporting and reimporting a personal ORL entry if desired.
+- Keep full Windows functional, accessibility and previous browser E2E acceptance open until Miguel reports results. No additional optional automated tests or agent-driven computer GUI acceptance.

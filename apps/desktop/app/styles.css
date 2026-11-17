@@ -7,4 +7,6 @@
 .book-cover:hover{background:linear-gradient(140deg,#315d57,#acc2a5)}
 .book-cover:focus-visible{outline:3px solid #c07820}
 .book h3{overflow-wrap:anywhere}
-
+/* Readium scroll/page layout is controlled by reader settings, not iframe CSS overflow. */
+.app-bar .layout-mode{white-space:nowrap;flex-shrink:0}
+@media(max-width:850px){.app-bar .layout-mode{padding:7px 10px}.app-bar strong{min-width:0}}
