@@ -2,8 +2,8 @@
 import {useCallback,useEffect,useMemo,useRef,useState} from "react";
 import {invoke} from "@tauri-apps/api/core";
 import {Locator,type Publication} from "@readium/shared";
-import {StatefulReaderWrapper,StatefulGlobalPreferencesProvider,ThStoreProvider,usePublication} from "@edrlab/thorium-web/reader";
-import {createPreferences,defaultPreferences,defaultFontCollection,ThSettingsKeys} from "@edrlab/thorium-web/core/preferences";
+import {StatefulReaderWrapper,StatefulGlobalPreferencesProvider,ThStoreProvider,usePublication,useEpubNavigator} from "@edrlab/thorium-web/reader";
+import {createPreferences,defaultPreferences,defaultFontCollection,ThLayoutUI,ThSettingsKeys} from "@edrlab/thorium-web/core/preferences";
 import {setScroll,useAppDispatch,useAppSelector} from "@edrlab/thorium-web/core/lib";
 import {validateOrlPackage,type OrlPackage,type OrlLocator,type OrlItem} from "@open-reading-layers/core";
 import {eligible,packagesForBook,plain,type Visible} from "./support";
@@ -12,7 +12,11 @@ type Book={id:string;title:string;identifier:string};
 type Saved={locator?:Record<string,unknown>;enabled?:Record<string,boolean>};
 type Opened={url:string;state:Saved|null;packages:unknown};
 const labels:Record<string,string>={people:"People / Characters",timeline:"Timeline",reentry:"Re-entry Context"};
-const readerPreferences=createPreferences({...defaultPreferences,settings:{...defaultPreferences.settings,keys:{...defaultPreferences.settings.keys,
+// In scroll mode keep Thorium's chapter footer visible instead of hover-only bars.
+const readerPreferences=createPreferences({...defaultPreferences,
+  theming:{...defaultPreferences.theming,layout:{...defaultPreferences.theming.layout,
+    ui:{...defaultPreferences.theming.layout.ui,reflow:ThLayoutUI.stacked}}},
+  settings:{...defaultPreferences.settings,keys:{...defaultPreferences.settings.keys,
   [ThSettingsKeys.fontFamily]:{default:Object.fromEntries(Object.entries(defaultFontCollection).filter(([,f])=>f.source.type==="system"))}}}});
 function errorText(e:unknown){return e instanceof Error?e.message:String(e)}
 export default function Desktop(){
@@ -64,9 +68,13 @@ function Reading({book,data,publication,profile,onClose}:{book:Book;data:Opened;
   const [locator,setLocator]=useState<Locator|undefined>(()=>Locator.deserialize(data.state?.locator));
   const [draft,setDraft]=useState<{id?:string;type:string;label:string;text:string;target:OrlLocator}|null>(null);
   const [pending,setPending]=useState<OrlPackage|null>(null),[saving,setSaving]=useState(false);
-  const scroll=useAppSelector(state=>state.settings.scroll),isFXL=useAppSelector(state=>state.publication.isFXL),dispatch=useAppDispatch();
-  const readingSurface=useRef<HTMLElement>(null),wasCompact=useRef<boolean|null>(null),automaticLayout=useRef<boolean|null>(null),scrollMode=useRef(scroll);
-  scrollMode.current=scroll;
+  const scroll=useAppSelector(state=>state.settings.scroll),isFXL=useAppSelector(state=>state.publication.isFXL);
+  const readerLoading=useAppSelector(state=>state.reader.isLoading),dispatch=useAppDispatch();
+  const {getSetting,submitPreferences}=useEpubNavigator();
+  const [layoutBusy,setLayoutBusy]=useState(false);
+  const readingSurface=useRef<HTMLElement>(null),wasCompact=useRef<boolean|null>(null);
+  const automaticLayout=useRef<boolean|null>(null),intendedScroll=useRef(scroll);
+  const modeQueue=useRef(Promise.resolve());
   const current=useRef(locator),generation=useRef(0),queue=useRef(Promise.resolve()),supportButton=useRef<HTMLButtonElement>(null),supportHeading=useRef<HTMLHeadingElement>(null),editorHeading=useRef<HTMLHeadingElement>(null);
   const snapshot=useRef({packages,enabled});snapshot.current={packages,enabled};
   const active=useMemo(()=>packagesForBook(packages,publication),[packages,publication]);
@@ -91,40 +99,55 @@ function Reading({book,data,publication,profile,onClose}:{book:Book;data:Opened;
   useEffect(()=>{persist(current.current)},[packages,enabled,persist]);
   useEffect(()=>{if(support)supportHeading.current?.focus()},[support]);
   useEffect(()=>{if(draft)editorHeading.current?.focus()},[!!draft]);
-  // Thorium's paginated view intentionally clips each page; scrolling the outer
-  // React section cannot reach the rest of the EPUB. Use Readium's own scroll
-  // mode while the *reading surface* (including with support open) is narrow.
+  // Beta.4 changed Redux without changing the underlying Readium layout.
+  // Mirror Thorium's StatefulLayout: apply navigator preference first.
+  const applyLayout=useCallback((desired:boolean)=>{
+    intendedScroll.current=desired;
+    modeQueue.current=modeQueue.current.catch(()=>{}).then(async()=>{
+      setLayoutBusy(true);
+      try{
+        const before=getSetting("scroll");
+        if(typeof before!=="boolean")throw new Error("The EPUB navigator is not ready.");
+        if(before!==desired)await submitPreferences({scroll:desired});
+        const actual=getSetting("scroll");
+        if(typeof actual!=="boolean")throw new Error("The EPUB navigator did not confirm its layout.");
+        dispatch(setScroll(actual));
+      }catch(e){
+        setMessage("Could not change reading layout: "+errorText(e));
+      }finally{
+        setLayoutBusy(false);
+      }
+    });
+  },[dispatch,getSetting,submitPreferences]);
+  useEffect(()=>{intendedScroll.current=scroll},[scroll]);
   useEffect(()=>{
-    if(profile!=="epub"||isFXL)return;
+    if(profile!=="epub"||isFXL||readerLoading)return;
     const surface=readingSurface.current;
     if(!surface)return;
     const observer=new ResizeObserver(entries=>{
-      const width=entries[0]?.contentRect.width??surface.clientWidth;
-      if(width===0)return;
-      const compact=width<840;
+      const rect=entries[0]?.contentRect;
+      const width=rect?.width??surface.clientWidth;
+      const height=rect?.height??surface.clientHeight;
+      if(width<=0||height<=0)return;
+      const compact=width<840||height<600;
       if(compact===wasCompact.current)return;
       wasCompact.current=compact;
-      if(compact&&!scrollMode.current){
+      if(compact&&!intendedScroll.current){
         automaticLayout.current=false;
-        scrollMode.current=true;
-        dispatch(setScroll(true));
+        applyLayout(true);
       }else if(!compact&&automaticLayout.current!==null){
         const previous=automaticLayout.current;
         automaticLayout.current=null;
-        if(scrollMode.current!==previous){
-          scrollMode.current=previous;
-          dispatch(setScroll(previous));
-        }
+        if(intendedScroll.current!==previous)applyLayout(previous);
       }
     });
     observer.observe(surface);
     return ()=>observer.disconnect();
-  },[profile,isFXL,dispatch]);
+  },[profile,isFXL,readerLoading,applyLayout]);
   function toggleReadingLayout(){
-    // A manual choice takes precedence over this session's automatic switch.
+    if(layoutBusy||readerLoading)return;
     automaticLayout.current=null;
-    scrollMode.current=!scroll;
-    dispatch(setScroll(!scroll));
+    applyLayout(!scroll);
   }
   function closeSupport(){setDraft(null);setPending(null);setSupport(false);supportButton.current?.focus()}
   async function closeBook(){try{await queue.current;onClose()}catch{setMessage("Local save failed. Retry by changing a layer toggle before leaving.")}}
@@ -167,7 +190,7 @@ function Reading({book,data,publication,profile,onClose}:{book:Book;data:Opened;
   return <main className={"reader-app"+(support?" support-open":"")}>
     <header className="app-bar"><button onClick={()=>void closeBook()}>Library</button><strong>{book.title}</strong>
       <span className="save-status" role="status">{saving?"Saving.":"Local reading"}</span>
-      {profile==="epub"&&!isFXL&&<button className="layout-mode" type="button" aria-pressed={scroll} title={scroll?"Switch to paginated reading":"Switch to vertical scrolling"} onClick={toggleReadingLayout}>{scroll?"Scroll view":"Page view"}</button>}
+      {profile==="epub"&&!isFXL&&<button className="layout-mode" type="button" aria-pressed={scroll} disabled={readerLoading||layoutBusy} title={scroll?"Switch to paginated reading":"Switch to vertical scrolling"} onClick={toggleReadingLayout}>{layoutBusy?"Changing view…":scroll?"Scroll view":"Page view"}</button>}
       <button ref={supportButton} aria-expanded={support} aria-controls="support-panel" onClick={()=>support?closeSupport():setSupport(true)}>Reading Support</button></header>
     <div className="reader-body"><section className="reading-surface" ref={readingSurface} aria-label="Book reader">
       <StatefulReaderWrapper profile={profile} publication={publication} localDataKey={"orl-book-"+book.id} positionStorage={positionStorage} preferences={{initialPreferences:readerPreferences}} i18n={{load:"languageOnly"}}/>
