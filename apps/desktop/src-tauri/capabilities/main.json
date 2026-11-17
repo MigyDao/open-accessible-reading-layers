@@ -1,0 +1,10 @@
+{
+  "identifier": "main",
+  "description": "Only the bundled main application receives IPC. Publication origins receive no native permissions.",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default"
+  ]
+}

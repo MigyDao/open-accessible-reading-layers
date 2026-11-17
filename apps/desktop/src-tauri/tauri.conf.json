@@ -1,0 +1,49 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Open Accessible Reading Layers",
+  "version": "0.1.0-beta.1",
+  "identifier": "com.migydao.orl",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../out"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Open Accessible Reading Layers - V1 Beta",
+        "width": 1200,
+        "height": 820,
+        "minWidth": 720,
+        "minHeight": 500
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' ipc: http://ipc.localhost http://orl.localhost; frame-src 'self' blob: http://orl.localhost; img-src 'self' blob: data: http://orl.localhost; font-src 'self' data: http://orl.localhost; worker-src 'self' blob:",
+      "capabilities": [
+        "main"
+      ]
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "nsis"
+    ],
+    "resources": {
+      "../../../examples/demo-book/src/": "demo/"
+    },
+    "shortDescription": "Offline EPUB reading with optional reading support",
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser"
+      },
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper",
+        "silent": true
+      }
+    }
+  }
+}
