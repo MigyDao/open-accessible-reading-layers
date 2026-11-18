@@ -6,6 +6,7 @@
     "apps/*"
   ],
   "scripts": {
+    "generate:validator": "node scripts/generate-orl-validator.mjs",
     "test": "npm run test --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present"
   },

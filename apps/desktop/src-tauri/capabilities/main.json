@@ -1,0 +1,17 @@
+{
+  "identifier": "main",
+  "description": "Only the bundled main application receives IPC. Publication origins receive no native permissions.",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    "allow-list-books",
+    "allow-import-book",
+    "allow-open-book",
+    "allow-save-book",
+    "allow-remove-book",
+    "allow-import-layers",
+    "allow-export-layers"
+  ]
+}

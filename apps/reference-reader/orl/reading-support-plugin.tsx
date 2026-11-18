@@ -124,7 +124,6 @@ export function ReadingSupportPanel({
   const docking = useDocking(READING_SUPPORT_ACTION_KEY);
   const {
     package: orlPackage,
-    diagnostics,
     revealedPeople
   } = useOrlSession();
 
@@ -168,15 +167,7 @@ export function ReadingSupportPanel({
               Reading support could not be activated for this
               publication.
             </p>
-            {diagnostics.length > 0 ? (
-              <ul>
-                {diagnostics.map((diagnostic) => (
-                  <li key={diagnostic.code}>
-                    {diagnostic.message}
-                  </li>
-                ))}
-              </ul>
-            ) : null}
+            <p>You can continue reading the publication.</p>
           </>
         ) : (
           <>

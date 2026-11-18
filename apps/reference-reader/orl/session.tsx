@@ -2,6 +2,7 @@
 
 import {
   createContext,
+  useEffect,
   useCallback,
   useContext,
   useMemo,
@@ -11,7 +12,6 @@ import {
 } from "react";
 import type { Locator, Publication } from "@readium/shared";
 
-import demoPackageJson from "../../../examples/demo-book/the-water-line.orl.json";
 import {
   compareLocators,
   normalizeResourceHref,
@@ -233,9 +233,27 @@ export function OrlSessionProvider({
   manifestUrl: string;
   children: ReactNode;
 }) {
+  const [packageJson, setPackageJson] = useState<unknown>(null);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const lastLocator = useRef<Locator | null>(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch("/api/reading-support", { signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("ORL sidecar unavailable");
+        return response.json() as Promise<unknown>;
+      })
+      .then(setPackageJson)
+      .catch(() => {
+        if (!controller.signal.aborted) setLoadFailed(true);
+      });
+    return () => controller.abort();
+  }, []);
+
   const validation = useMemo(
-    () => validateOrlPackage(demoPackageJson),
-    []
+    () => validateOrlPackage(packageJson),
+    [packageJson]
   );
 
   const publicationIndex = useMemo<PublicationIndex>(
@@ -280,12 +298,15 @@ export function OrlSessionProvider({
       : null;
 
   const diagnostics = useMemo(
-    () => [...validation.diagnostics, ...publicationDiagnostics],
-    [publicationDiagnostics, validation.diagnostics]
+    () => loadFailed
+      ? [{ level: "error" as const, code: "package.load-failed", message: "Reading support is unavailable. You can continue reading." }]
+      : [...validation.diagnostics, ...publicationDiagnostics],
+    [loadFailed, publicationDiagnostics, validation.diagnostics]
   );
 
   const updateCurrentLocator = useCallback(
     async (locator: Locator) => {
+      lastLocator.current = locator;
       if (!activePackage) return;
 
       const peopleLayer = activePackage.layers.find(
@@ -323,6 +344,12 @@ export function OrlSessionProvider({
     },
     [activePackage, manifestUrl, publicationIndex]
   );
+
+  // Sidecar loading never gates the base reader. Replay the live location if
+  // the navigator emitted it before optional support finished loading.
+  useEffect(() => {
+    if (lastLocator.current) void updateCurrentLocator(lastLocator.current);
+  }, [updateCurrentLocator]);
 
   const value = useMemo<OrlSessionValue>(
     () => ({

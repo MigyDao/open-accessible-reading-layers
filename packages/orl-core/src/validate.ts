@@ -1,7 +1,5 @@
-import Ajv2020, { type ErrorObject } from "ajv/dist/2020.js";
-import addFormats from "ajv-formats";
-
-import schema from "../../../schema/orl-0.1.schema.json";
+import type { ErrorObject } from "ajv";
+import validateSchema from "./generated/orl-schema.cjs";
 
 import type { OrlPackage } from "./types";
 
@@ -17,15 +15,6 @@ export interface ValidationResult {
   package: OrlPackage | null;
   diagnostics: ValidationDiagnostic[];
 }
-
-const ajv = new Ajv2020({
-  allErrors: true,
-  strict: false
-});
-
-addFormats(ajv);
-
-const validateSchema = ajv.compile(schema);
 
 function schemaErrorToDiagnostic(
   error: ErrorObject

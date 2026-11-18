@@ -4,6 +4,7 @@ import { useMemo, useRef, useState } from "react";
 import type { Locator, Publication } from "@readium/shared";
 import {
   StatefulReaderWrapper,
+  StatefulGlobalPreferencesProvider,
   ThStoreProvider,
   usePublication
 } from "@edrlab/thorium-web/reader";
@@ -67,13 +68,16 @@ function OrlReader({
         storedLocator.current = locator;
         setCurrentLocator(locator);
         await updateCurrentLocator(locator);
+        window.dispatchEvent(new CustomEvent("orl:position-changed", {
+          detail: locator.serialize()
+        }));
       }
     }),
     [updateCurrentLocator]
   );
 
   return (
-    <ThStoreProvider>
+    <>
       <StatefulReaderWrapper
         profile={profile}
         publication={publication}
@@ -85,6 +89,7 @@ function OrlReader({
         preferences={{
           initialPreferences: orlReaderPreferences
         }}
+        i18n={{ load: "languageOnly" }}
       />
 
       {process.env.NODE_ENV === "development" &&
@@ -97,11 +102,11 @@ function OrlReader({
           <code>{JSON.stringify(currentLocator.serialize())}</code>
         </output>
       ) : null}
-    </ThStoreProvider>
+    </>
   );
 }
 
-export function ReaderClient() {
+function PublicationReader() {
   const manifestUrl = useMemo(demoManifestUrl, []);
 
   const {
@@ -136,7 +141,7 @@ export function ReaderClient() {
     return (
       <section className="reader-status" aria-live="polite">
         <h1>Open Accessible Reading Layers</h1>
-        <p>Loading The Water Line…</p>
+        <p>Loading The Water Line.</p>
       </section>
     );
   }
@@ -152,5 +157,15 @@ export function ReaderClient() {
         localDataKey={localDataKey}
       />
     </OrlSessionProvider>
+  );
+}
+
+export function ReaderClient() {
+  return (
+    <ThStoreProvider>
+      <StatefulGlobalPreferencesProvider initialPreferences={{ locale: "en" }}>
+        <PublicationReader />
+      </StatefulGlobalPreferencesProvider>
+    </ThStoreProvider>
   );
 }

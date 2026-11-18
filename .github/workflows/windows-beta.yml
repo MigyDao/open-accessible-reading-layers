@@ -1,0 +1,54 @@
+name: Windows V1 beta
+on:
+  pull_request:
+    paths:
+      - 'apps/desktop/**'
+      - 'packages/orl-core/**'
+      - 'schema/**'
+      - 'examples/**'
+      - 'scripts/prepare-desktop.mjs'
+      - 'scripts/generate-orl-validator.mjs'
+      - 'package-lock.json'
+      - '.github/workflows/windows-beta.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  windows:
+    name: Compile and package Windows beta
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: apps/desktop/src-tauri -> target
+      - name: Install dependencies
+        run: npm ci
+      - name: Compile desktop TypeScript
+        run: npm run typecheck --workspace @open-reading-layers/desktop
+      - name: Package Windows installer
+        run: npm run package --workspace @open-reading-layers/desktop
+      - name: Record source and checksum
+        shell: pwsh
+        run: |
+          $sha = git rev-parse HEAD
+          "Source: $sha" | Set-Content apps/desktop/src-tauri/target/release/bundle/SOURCE.txt
+          Get-ChildItem apps/desktop/src-tauri/target/release/bundle/nsis/*.exe | Get-FileHash -Algorithm SHA256 | Format-List | Out-File apps/desktop/src-tauri/target/release/bundle/SHA256.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ORL-Windows-x64-beta
+          path: |
+            apps/desktop/src-tauri/target/release/bundle/nsis/*.exe
+            apps/desktop/src-tauri/target/release/bundle/SOURCE.txt
+            apps/desktop/src-tauri/target/release/bundle/SHA256.txt
+            docs/windows-beta.md
+            package-lock.json
+            apps/desktop/src-tauri/Cargo.lock
+          retention-days: 30
+
