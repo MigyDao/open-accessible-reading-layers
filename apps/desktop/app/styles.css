@@ -12,3 +12,9 @@
 @media(max-width:850px){.app-bar .layout-mode{padding:7px 10px}.app-bar strong{min-width:0}}
 /* Keep the embedded reader within the actual available window height. */
 .reader-body,.reading-surface{min-height:0}
+/* ORL-owned, always-visible reading-order navigation. Kept outside the
+   embedded Thorium reader so short windows and hover overlays cannot hide it. */
+.chapter-navigation{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:64px;padding:8px 16px;background:#f5f4ee;border-top:1px solid #ccd6ca;flex:0 0 auto}
+.chapter-navigation button{min-width:155px;flex:0 1 auto}
+.chapter-navigation .chapter-position{color:#526b68;font-size:.85rem;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:850px){.chapter-navigation{padding:6px 8px;gap:6px}.chapter-navigation button{min-width:0;flex:1;font-size:.9rem;padding:8px 6px}.chapter-navigation .chapter-position{display:none}}

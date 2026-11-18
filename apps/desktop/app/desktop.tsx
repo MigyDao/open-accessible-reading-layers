@@ -1,7 +1,7 @@
 "use client";
 import {useCallback,useEffect,useMemo,useRef,useState} from "react";
 import {invoke} from "@tauri-apps/api/core";
-import {Locator,type Publication} from "@readium/shared";
+import {Link,Locator,type Publication} from "@readium/shared";
 import {StatefulReaderWrapper,StatefulGlobalPreferencesProvider,ThStoreProvider,usePublication,useEpubNavigator} from "@edrlab/thorium-web/reader";
 import {createPreferences,defaultPreferences,defaultFontCollection,ThLayoutUI,ThSettingsKeys} from "@edrlab/thorium-web/core/preferences";
 import {setScroll,useAppDispatch,useAppSelector} from "@edrlab/thorium-web/core/lib";
@@ -70,7 +70,8 @@ function Reading({book,data,publication,profile,onClose}:{book:Book;data:Opened;
   const [pending,setPending]=useState<OrlPackage|null>(null),[saving,setSaving]=useState(false);
   const scroll=useAppSelector(state=>state.settings.scroll),isFXL=useAppSelector(state=>state.publication.isFXL);
   const readerLoading=useAppSelector(state=>state.reader.isLoading),dispatch=useAppDispatch();
-  const {getSetting,submitPreferences}=useEpubNavigator();
+  const readerProgressIndex=useAppSelector(state=>state.publication.progress?.progression?.currentIndex);
+  const {getSetting,submitPreferences,goLink}=useEpubNavigator();
   const [layoutBusy,setLayoutBusy]=useState(false);
   const readingSurface=useRef<HTMLElement>(null),wasCompact=useRef<boolean|null>(null);
   const automaticLayout=useRef<boolean|null>(null),intendedScroll=useRef(scroll);
@@ -78,6 +79,35 @@ function Reading({book,data,publication,profile,onClose}:{book:Book;data:Opened;
   const current=useRef(locator),generation=useRef(0),queue=useRef(Promise.resolve()),supportButton=useRef<HTMLButtonElement>(null),supportHeading=useRef<HTMLHeadingElement>(null),editorHeading=useRef<HTMLHeadingElement>(null);
   const snapshot=useRef({packages,enabled});snapshot.current={packages,enabled};
   const active=useMemo(()=>packagesForBook(packages,publication),[packages,publication]);
+  const readingOrder=publication.readingOrder.items;
+  // Resolve against the publication's actual reading order. The persisted locator
+  // normally has the latest href; use Thorium's 1-based progress index during
+  // initial loading, before ORL receives a position callback.
+  const chapterIndex=useMemo(()=>{
+    const href=locator?.href;
+    if(href){
+      const canonical=(value:string)=>{
+        try{return new URL(value.split("#")[0],data.url).href}
+        catch{return value.split("#")[0]}
+      };
+      const idx=readingOrder.findIndex(item=>canonical(item.href)===canonical(href));
+      if(idx>=0)return idx;
+    }
+    return typeof readerProgressIndex==="number"&&Number.isInteger(readerProgressIndex)
+      &&readerProgressIndex>=1&&readerProgressIndex<=readingOrder.length
+      ?readerProgressIndex-1:-1;
+  },[data.url,locator?.href,readerProgressIndex,readingOrder]);
+  function goChapter(direction:-1|1){
+    if(!scroll||readerLoading||isFXL||chapterIndex<0)return;
+    const target=readingOrder[chapterIndex+direction];
+    if(!target)return;
+    // This is the same navigator API used by Thorium's built-in footer.
+    // Position storage and spoiler gating continue through the existing
+    // positionChanged callback, not a synthetic ORL locator.
+    goLink(new Link({href:target.href}),false,ok=>{
+      if(!ok)setMessage("Could not open that chapter. Try the table of contents.");
+    });
+  }
   const persist=useCallback((position:Locator|undefined)=>{
     const state={enabled:snapshot.current.enabled,locator:position?.serialize()};
     const packages=snapshot.current.packages;
@@ -225,6 +255,11 @@ function Reading({book,data,publication,profile,onClose}:{book:Book;data:Opened;
         </div>)}</section>
       <p className="muted">Use the reader toolbar for contents, navigation, text size, spacing and theme. Shift+Tab / Tab moves between controls; Escape closes this panel.</p>
     </aside>}</div>
+    {profile==="epub"&&!isFXL&&scroll&&<nav className="chapter-navigation" aria-label="Chapter navigation">
+      <button type="button" onClick={()=>goChapter(-1)} disabled={readerLoading||chapterIndex<=0} aria-label="Previous chapter">← Previous chapter</button>
+      <span className="chapter-position" aria-live="off">{chapterIndex>=0?`Section ${chapterIndex+1} of ${readingOrder.length}`:"Finding reading position…"}</span>
+      <button type="button" onClick={()=>goChapter(1)} disabled={readerLoading||chapterIndex<0||chapterIndex>=readingOrder.length-1} aria-label="Next chapter">Next chapter →</button>
+    </nav>}
     {!support&&message&&<button className="status-toast" onClick={()=>setSupport(true)}>{message}</button>}
   </main>;
 }
