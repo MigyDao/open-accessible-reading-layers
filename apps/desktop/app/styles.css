@@ -18,3 +18,28 @@
 .chapter-navigation button{min-width:155px;flex:0 1 auto}
 .chapter-navigation .chapter-position{color:#526b68;font-size:.85rem;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:850px){.chapter-navigation{padding:6px 8px;gap:6px}.chapter-navigation button{min-width:0;flex:1;font-size:.9rem;padding:8px 6px}.chapter-navigation .chapter-position{display:none}}
+/* Beta.7: explicit authoring workspace. Reader mode stays reveal-gated. */
+.author-panel{width:46vw;min-width:340px;max-width:640px;flex:0 0 auto;overflow-y:auto;overflow-wrap:anywhere;background:#fffdf8;padding:22px;border-left:2px solid #315c56}
+.author-panel h2{font-size:1.4rem;margin:0}
+.author-warning{margin:16px 0;padding:12px;border:1px solid #c39b58;background:#fff7dd;color:#43351b;border-radius:6px;font-size:.92rem}
+.author-panel .editor{margin:20px 0}
+.author-panel .editor input[type=file]{font-size:.9rem}
+.author-panel .editor .toggle{flex-direction:row}
+.author-panel .editor .toggle input{width:auto}
+.author-package{margin-top:20px;padding-top:14px;border-top:2px solid #d5ddcf}
+.author-package h4{margin-bottom:6px}
+.author-entry{border:1px solid #dae0d8;border-radius:8px;background:#fff;padding:12px;margin:10px 0}
+.author-entry p{font-size:.88rem;white-space:pre-wrap;margin-bottom:6px}
+.author-filter{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:16px 0}
+.author-filter select{max-width:185px}
+.author-image-preview{border:1px solid #dae0d8;padding:12px;margin:10px 0;border-radius:6px}
+.author-image-preview img{display:block;max-width:100%;max-height:200px;object-fit:contain;margin-bottom:8px}
+.support-image{display:block;width:auto;max-width:100%;max-height:270px;object-fit:contain;margin:12px auto;border-radius:4px}
+.support-entry.support-style-note{border-left:5px solid #64877b;background:#f1f5f0}
+.support-entry.support-style-status-board{background:#203b37;color:#f7f0dd;border-color:#a88b54}
+.support-entry.support-style-status-board h4,.support-entry.support-style-status-board .support-text{color:#f7f0dd}
+.support-entry.support-style-status-board .badge{color:#173e3d}
+.support-entry.support-style-quote .support-text{font:italic 1.05rem/1.7 Georgia,serif;padding-left:12px;border-left:3px solid #9aa89a}
+.support-entry.support-style-compact-fact{padding:10px 12px}
+.support-entry.support-style-compact-fact h4{margin-bottom:3px}
+@media(max-width:850px){.author-panel{min-width:300px;width:49vw;max-width:55vw;padding:12px}.app-bar{flex-wrap:wrap}.app-bar strong{flex-basis:35%}}

@@ -7,6 +7,7 @@ import {createPreferences,defaultPreferences,defaultFontCollection,ThLayoutUI,Th
 import {setScroll,useAppDispatch,useAppSelector} from "@edrlab/thorium-web/core/lib";
 import {validateOrlPackage,type OrlPackage,type OrlLocator,type OrlItem} from "@open-reading-layers/core";
 import {eligible,packagesForBook,plain,type Visible} from "./support";
+import {AuthorWorkspace,safeImageSrc,presentationVariant} from "./author";
 
 type Book={id:string;title:string;identifier:string};
 type Saved={locator?:Record<string,unknown>;enabled?:Record<string,boolean>};
@@ -64,7 +65,7 @@ function PublicationReader({book,data,onClose}:{book:Book;data:Opened;onClose:()
 function Reading({book,data,publication,profile,onClose}:{book:Book;data:Opened;publication:Publication;profile:"epub"|"webPub"|"audio"|null|undefined;onClose:()=>void}){
   const [packages,setPackages]=useState<OrlPackage[]>(()=>packagesForBook(data.packages,publication));
   const [enabled,setEnabled]=useState<Record<string,boolean>>(data.state?.enabled??{people:true,timeline:true,reentry:true});
-  const [support,setSupport]=useState(false),[visible,setVisible]=useState<Visible[]>([]),[message,setMessage]=useState("");
+  const [support,setSupport]=useState(false),[author,setAuthor]=useState(false),[visible,setVisible]=useState<Visible[]>([]),[message,setMessage]=useState("");
   const [locator,setLocator]=useState<Locator|undefined>(()=>Locator.deserialize(data.state?.locator));
   const [draft,setDraft]=useState<{id?:string;type:string;label:string;text:string;target:OrlLocator}|null>(null);
   const [pending,setPending]=useState<OrlPackage|null>(null),[saving,setSaving]=useState(false);
@@ -218,11 +219,12 @@ function Reading({book,data,publication,profile,onClose}:{book:Book;data:Opened;
   function removeItem(v:Visible){
     setPackages(old=>old.map(p=>p.id!==v.packageId?p:{...p,layers:p.layers.map(l=>({...l,items:l.items.filter(i=>i.id!==v.item.id)}))}));
   }
-  return <main className={"reader-app"+(support?" support-open":"")}>
+  return <main className={"reader-app"+(support?" support-open":"")+(author?" author-open":"")}>
     <header className="app-bar"><button onClick={()=>void closeBook()}>Library</button><strong>{book.title}</strong>
       <span className="save-status" role="status">{saving?"Saving.":"Local reading"}</span>
       {profile==="epub"&&!isFXL&&<button className="layout-mode" type="button" aria-pressed={scroll} disabled={readerLoading||layoutBusy} title={scroll?"Switch to paginated reading":"Switch to vertical scrolling"} onClick={toggleReadingLayout}>{layoutBusy?"Changing view…":scroll?"Scroll view":"Page view"}</button>}
-      <button ref={supportButton} aria-expanded={support} aria-controls="support-panel" onClick={()=>support?closeSupport():setSupport(true)}>Reading Support</button></header>
+      <button ref={supportButton} aria-expanded={support} aria-controls="support-panel" onClick={()=>{if(author){setAuthor(false);setSupport(true)}else support?closeSupport():setSupport(true)}}>Reading Support</button>
+      <button type="button" aria-pressed={author} aria-controls="author-panel" onClick={()=>{setAuthor(old=>!old);setSupport(false);setDraft(null);setPending(null)}}>Author Workspace</button></header>
     <div className="reader-body"><section className="reading-surface" ref={readingSurface} aria-label="Book reader">
       <StatefulReaderWrapper profile={profile} publication={publication} localDataKey={"orl-book-"+book.id} positionStorage={positionStorage} preferences={{initialPreferences:readerPreferences}} i18n={{load:"languageOnly"}}/>
     </section>
@@ -243,8 +245,10 @@ function Reading({book,data,publication,profile,onClose}:{book:Book;data:Opened;
         <div className="panel-actions"><button type="submit" className="primary">Save entry</button><button type="button" onClick={()=>{setDraft(null);supportHeading.current?.focus()}}>Cancel</button></div>
       </form>}
       {Object.entries(labels).filter(([type])=>enabled[type]).map(([type,label])=><section className="layer" key={type}><h3>{label}</h3>
-        {visible.filter(v=>v.type===type).length===0?<p className="muted">No support available at this location.</p>:<ul>{visible.filter(v=>v.type===type).map(v=><li key={v.packageId+v.item.id}>
-          <h4>{v.item.label}</h4><p className="support-text">{v.item.text}</p><span className="badge">{v.provenance}</span>
+        {visible.filter(v=>v.type===type).length===0?<p className="muted">No support available at this location.</p>:<ul>{visible.filter(v=>v.type===type).map(v=><li className={"support-entry support-style-"+presentationVariant(v.item)} key={v.packageId+v.item.id}>
+          <h4>{v.item.label}</h4><p className="support-text">{v.item.text}</p>
+          {safeImageSrc(v.item.visual?.src)&&<img className="support-image" src={safeImageSrc(v.item.visual?.src)} alt={v.item.visual?.decorative?"":v.item.visual?.alt??""} loading="lazy"/>}
+          <span className="badge">{v.provenance}</span>
           {v.provenance==="personal"&&v.packageId==="urn:orl:personal:"+book.id&&<div className="panel-actions"><button onClick={()=>setDraft({id:v.item.id,type:v.type,label:v.item.label,text:v.item.text,target:v.item.target.start})}>Edit</button><button onClick={()=>removeItem(v)}>Delete</button></div>}
         </li>)}</ul>}
       </section>)}
@@ -255,13 +259,18 @@ function Reading({book,data,publication,profile,onClose}:{book:Book;data:Opened;
           <button className="quiet" onClick={()=>{if(window.confirm("Remove this local support package? Export first to keep a portable copy."))setPackages(old=>old.filter(p=>p.id!==pkg.id))}}>Remove package</button>
         </div>)}</section>
       <p className="muted">Use the reader toolbar for contents, navigation, text size, spacing and theme. Shift+Tab / Tab moves between controls; Escape closes this panel.</p>
-    </aside>}</div>
+    </aside>}
+    {author&&<AuthorWorkspace book={book} publication={publication} packages={packages} setPackages={setPackages}
+      locator={locator} onClose={()=>setAuthor(false)} onImport={()=>void importLayers()}
+      onExport={pkg=>void invoke<boolean>("export_layers",{package:pkg}).then(ok=>{if(ok)setMessage("ORL JSON exported.")}).catch(e=>setMessage(errorText(e)))}
+      onMessage={setMessage}/>}
+    </div>
     {profile==="epub"&&!isFXL&&scroll&&<nav className="chapter-navigation" aria-label="Chapter navigation">
       <button type="button" onClick={()=>goChapter(-1)} disabled={readerLoading||chapterIndex<=0} aria-label="Previous chapter">← Previous chapter</button>
       <span className="chapter-position" aria-live="off">{chapterIndex>=0?`Section ${chapterIndex+1} of ${readingOrder.length}`:"Finding reading position…"}</span>
       <button type="button" onClick={()=>goChapter(1)} disabled={readerLoading||chapterIndex<0||chapterIndex>=readingOrder.length-1} aria-label="Next chapter">Next chapter →</button>
     </nav>}
-    {!support&&message&&<button className="status-toast" onClick={()=>setSupport(true)}>{message}</button>}
+    {!support&&!author&&message&&<button className="status-toast" onClick={()=>setSupport(true)}>{message}</button>}
   </main>;
 }
 
