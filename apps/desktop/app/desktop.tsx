@@ -87,8 +87,9 @@ function Reading({book,data,publication,profile,onClose}:{book:Book;data:Opened;
     const href=locator?.href;
     if(href){
       const canonical=(value:string)=>{
-        try{return new URL(value.split("#")[0],data.url).href}
-        catch{return value.split("#")[0]}
+        const path=value.split("#")[0]??value;
+        try{return new URL(path,data.url).href}
+        catch{return path}
       };
       const idx=readingOrder.findIndex(item=>canonical(item.href)===canonical(href));
       if(idx>=0)return idx;
