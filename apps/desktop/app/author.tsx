@@ -35,7 +35,7 @@ export function AuthorWorkspace({book,publication,packages,setPackages,locator,o
     setEditor({
       id:editable?item.id:undefined,
       type,label:item.label,text:item.text,target:item.target.start,
-      visual:item.visual?{...item.visual}:undefined,
+      visual:item.visual?.src?{src:item.visual.src,alt:item.visual.alt,decorative:item.visual.decorative}:undefined,
       style:presentationVariant(item),
       data: {...(item.data as Record<string,unknown>|undefined??{})},
     });
