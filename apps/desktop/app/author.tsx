@@ -93,7 +93,7 @@ export function AuthorWorkspace({book,publication,packages,setPackages,locator,o
     reader.readAsDataURL(file);
   }
   const entryCount=packages.reduce((n,p)=>n+p.layers.reduce((sum,l)=>sum+l.items.length,0),0);
-  return <aside className="author-panel" aria-label="Author Workspace">
+  return <aside id="author-panel" className="author-panel" aria-label="Author Workspace">
     <header className="panel-header">
       <h2>Author Workspace</h2>
       <button type="button" onClick={()=>{setEditor(null);onClose()}}>Return to reading</button>
